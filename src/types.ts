@@ -47,7 +47,7 @@ export interface AppSettings {
   export interface EditHistory {
     id?: number;
     gameId?: number;
-    actionType: 'EDIT' | 'UNLOCK' | 'RELOCK' | 'START' | 'END' | 'CREATE';
+    actionType: 'EDIT' | 'UNLOCK' | 'RELOCK' | 'START' | 'END' | 'CREATE' | 'DELETE';
     performedBy: string;
     reason: string;
     changes: string; // JSON string or description
