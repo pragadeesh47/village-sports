@@ -111,7 +111,7 @@ const ParticipantsList: React.FC = () => {
   });
 
   return (
-    <div className="p-6 lg:p-10 bg-gray-50 min-h-full pb-32">
+    <div className="p-2 lg:p-10 bg-gray-50 min-h-full">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-black text-gray-900">Participants</h1>
@@ -146,19 +146,22 @@ const ParticipantsList: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         {filtered.map(p => (
-          <div key={p.id} className={`bg-white p-6 rounded-3xl shadow-sm border-2 transition-all ${selectedIds.has(p.id!) ? 'border-indigo-600 ring-4 ring-indigo-50' : 'border-gray-100'}`}>
-            <div className="flex items-start justify-between mb-4">
+          <div key={p.id} className={`bg-white p-2 rounded-3xl shadow-sm border-2 transition-all ${selectedIds.has(p.id!) ? 'border-indigo-600 ring-4 ring-indigo-50' : 'border-gray-100'}`}>
+            <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-3">
-                <button onClick={() => toggleSelection(p.id!)} className={`w-8 h-8 rounded-lg flex items-center justify-center border-2 transition-all ${selectedIds.has(p.id!) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 text-transparent'}`}><CheckSquare size={18} /></button>
-                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-black text-xl uppercase">{p.name.charAt(0)}</div>
+                <div onClick={() => toggleSelection(p.id!)} className={`w-8 h-8 rounded-lg flex items-center justify-center border-2 transition-all ${selectedIds.has(p.id!) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 text-transparent'}`}><CheckSquare size={18} /></div>
+                {/* <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-black text-xl uppercase">{p.name.charAt(0)}</div> */}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 truncate">{p.name}</h3>
+                  <div className="flex items-center gap-1.5 text-gray-500 font-bold text-sm">
+                    <Layers size={14} className="text-gray-400" />
+                    <span>{ageGroups.find(a => a.id === p.ageGroupId)?.name || 'Unassigned'}</span>
+                  </div>
+                </div>
               </div>
               <button onClick={() => { setEditingParticipant(p); setIsModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg"><Edit2 size={18} /></button>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 truncate">{p.name}</h3>
-            <div className="flex items-center gap-1.5 text-gray-500 font-bold text-sm">
-              <Layers size={14} className="text-gray-400" />
-              <span>{ageGroups.find(a => a.id === p.ageGroupId)?.name || 'Unassigned'}</span>
-            </div>
+            
           </div>
         ))}
         {filtered.length === 0 && (
