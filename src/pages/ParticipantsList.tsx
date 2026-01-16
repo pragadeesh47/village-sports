@@ -16,6 +16,8 @@ const ParticipantsList: React.FC = () => {
   const [isGameAssignModalOpen, setIsGameAssignModalOpen] = useState(false);
   const [editorName, setEditorName] = useState('');
   const [editReason, setEditReason] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -159,7 +161,15 @@ const ParticipantsList: React.FC = () => {
                   </div>
                 </div>
               </div>
+              <div>
               <button onClick={() => { setEditingParticipant(p); setIsModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg"><Edit2 size={18} /></button>
+              <button
+  onClick={() => setDeleteTarget(p)}
+  className="text-red-600 font-semibold"
+>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+</button>
+</div>
             </div>
             
           </div>
@@ -233,6 +243,92 @@ const ParticipantsList: React.FC = () => {
           </div>
         </div>
       )}
+      {deleteTarget && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+    <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6 space-y-4 animate-scaleIn">
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-800">
+          Delete Participant
+        </h2>
+        <button
+          onClick={() => setDeleteTarget(null)}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Content */}
+      <p className="text-sm text-gray-600">
+        Are you sure you want to delete
+        <span className="font-semibold text-gray-800">
+          {" "}{deleteTarget.name}
+        </span>?
+        <br />
+        This action <span className="text-red-600 font-semibold">cannot be undone</span>.
+      </p>
+
+      {/* Auditor Name */}
+      <input
+        type="text"
+        placeholder="Auditor name"
+        value={editorName}
+        onChange={e => setEditorName(e.target.value)}
+        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+      />
+
+      {/* Reason */}
+      <textarea
+        placeholder="Reason for deletion"
+        value={editReason}
+        onChange={e => setEditReason(e.target.value)}
+        rows={3}
+        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+      />
+
+      {/* Actions */}
+      <div className="flex justify-end gap-3 pt-2">
+        <button
+          onClick={() => setDeleteTarget(null)}
+          className="px-4 py-2 rounded-lg border text-sm font-semibold text-gray-600 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={async () => {
+            if (!editorName || !editReason) {
+              alert("Auditor name and reason are required.");
+              return;
+            }
+
+            await db.participants.delete(deleteTarget.id!);
+            await db.history.add({
+              actionType: 'DELETE',
+              performedBy: editorName,
+              reason: editReason,
+              changes: `Participant [${deleteTarget.name}] deleted.`,
+              timestamp: Date.now()
+            });
+
+            setParticipants(
+              participants.filter(p => p.id !== deleteTarget.id)
+            );
+
+            setDeleteTarget(null);
+          }}
+          className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700"
+        >
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
